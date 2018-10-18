@@ -1,5 +1,10 @@
 defmodule Servy.Handler do
+  @moduledoc "Handles HTTP Requets"
+  @pages_path Path.expand("../../pages", __DIR__)
 
+  @doc """
+  Transforms the request into a response
+  """
   def handle(request) do
     request
     |> parse
@@ -30,6 +35,9 @@ defmodule Servy.Handler do
   end
   def rewrite_path(conv), do: conv
 
+  @doc """
+  Logs 404 requests
+  """
   def track(%{status: 404, path: path} = conv) do
     IO.puts "WARNING: #{path} is on the loose."
     conv
@@ -42,11 +50,12 @@ defmodule Servy.Handler do
   def route(%{method: "GET", path: "/bears"} = conv) do
     %{conv | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
+
   def route(%{method: "GET", path: "/bears/new"} = conv) do
     IO.puts "==============================="
     IO.puts "inside the bears new route function"
 
-    Path.expand("../../pages", __DIR__)
+    @pages_path
     |> Path.join("form.html")
     |> File.read
     |> handle_file(conv)
@@ -58,7 +67,7 @@ defmodule Servy.Handler do
     %{conv | status: 403, resp_body: "Cannot delete da bears"}
   end
   def route(%{method: "GET", path: "/about"} = conv) do
-    Path.expand("../../pages", __DIR__)
+    @pages_path
     |> Path.join("about.html")
     |> File.read
     |> handle_file(conv)
