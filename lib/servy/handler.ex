@@ -1,6 +1,11 @@
 defmodule Servy.Handler do
   @moduledoc "Handles HTTP Requets"
+
   @pages_path Path.expand("../../pages", __DIR__)
+
+  import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
+  import Servy.Parser, only: [parse: 1]
+  import Servy.FileHandler, only: [handle_file: 2]
 
   @doc """
   Transforms the request into a response
@@ -14,35 +19,6 @@ defmodule Servy.Handler do
     |> track
     |> format_response
   end
-
-  def log(conv), do: IO.inspect conv
-
-  def parse(request) do
-    [method, path, _] =
-      request
-      |> String.split("\n")
-      |> List.first
-      |> String.split(" ")
-
-    %{ method: method, path: path, resp_body: "", status: nil }
-  end
-
-  def rewrite_path(%{path: "/wildlife"} = conv) do
-    %{conv | path: "/wildthings"} 
-  end
-  def rewrite_path(%{path: "/bears?id=" <> id} = conv) do
-    %{conv | path: "/bears/" <> id} 
-  end
-  def rewrite_path(conv), do: conv
-
-  @doc """
-  Logs 404 requests
-  """
-  def track(%{status: 404, path: path} = conv) do
-    IO.puts "WARNING: #{path} is on the loose."
-    conv
-  end
-  def track(conv), do: conv
 
   def route(%{method: "GET", path: "/wildthings"} = conv ) do
     %{conv | status: 200, resp_body: "Bears, Lions, Tigers"}
@@ -74,16 +50,6 @@ defmodule Servy.Handler do
   end
   def route(%{ path: path} = conv) do
     %{conv | status: 404, resp_body: "No #{path} here!"}
-  end
-
-  def handle_file({:ok, content}, conv) do
-    %{conv | status: 200, resp_body: content}
-  end
-  def handle_file({:error, :enoent}, conv) do
-    %{conv | status: 404, resp_body: "File not found!"}
-  end
-  def handle_file({:error, reason}, conv) do
-    %{conv | status: 500, resp_body: "File Error: #{reason}"}
   end
 
   def format_response(conv) do
