@@ -30,9 +30,6 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/bears/new"} = conv) do
-    IO.puts "==============================="
-    IO.puts "inside the bears new route function"
-
     @pages_path
     |> Path.join("form.html")
     |> File.read
@@ -61,134 +58,13 @@ defmodule Servy.Handler do
 
   def format_response(conv) do
     """
-    HTTP/1.1 #{Conv.full_status(conv)}
-    Content-Type: text/html
-    Content-Length: #{byte_size(conv.resp_body)} 
-
+    HTTP/1.1 #{Conv.full_status(conv)}\r
+    Content-Type: text/html\r
+    Content-Length: #{byte_size(conv.resp_body)}\r
+    \r
     #{conv.resp_body}
     """
   end
 
 end
-
-request = """
-GET /wildthings HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-request2 = """
-GET /bears HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-request3 = """
-GET /bigfoot HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-request4 = """
-GET /bears/1 HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-request5 = """
-DELETE /bears/1 HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-request6 = """
-GET /wildlife HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-request7 = """
-GET /bears?id=1 HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-request8 = """
-GET /about HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-request9 = """
-GET /bears/new HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-request10 = """
-POST /bears HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-Content-Type: application/x-www-form-urlencoded
-Content-Length: 21
-
-name=Baloo&type=Brown
-"""
-
-response = Servy.Handler.handle(request)
-IO.puts response
-
-IO.puts("====================================")
-response = Servy.Handler.handle(request2)
-IO.puts response
-
-IO.puts("====================================")
-response = Servy.Handler.handle(request3)
-IO.puts response
-
-IO.puts("====================================")
-response = Servy.Handler.handle(request4)
-IO.puts response
-
-IO.puts("====================================")
-response = Servy.Handler.handle(request5)
-IO.puts response
-
-IO.puts("====================================")
-response = Servy.Handler.handle(request6)
-IO.puts response
-
-IO.puts("====================================")
-response = Servy.Handler.handle(request7)
-IO.puts response
-
-IO.puts("====================================")
-response = Servy.Handler.handle(request8)
-IO.puts response
-
-IO.puts("====================================")
-response = Servy.Handler.handle(request9)
-IO.puts response
-
-IO.puts("====================================")
-response = Servy.Handler.handle(request10)
-IO.puts response
 
