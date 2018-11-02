@@ -7,9 +7,11 @@ defmodule Servy.Handler do
   import Servy.Parser, only: [parse: 1]
   import Servy.FileHandler, only: [handle_file: 2]
   import Servy.Conv, only: [put_content_length: 1]
+  import Servy.View, only: [render: 3]
 
   alias Servy.Conv
   alias Servy.BearController
+  alias Servy.VideoCam
 
   @doc """
   Transforms the request into a response
@@ -25,22 +27,25 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  def route(%Conv{ method: "GET", path: "/snapshots" } = conv) do
-    parent = self()
+  def route(%Conv{ method: "GET", path: "/sensors" } = conv) do
+    # NOTE: The commented out line is equivalent to the line below it. This method is called MFA:
+    # Module, Function, Arguments
+    #task = Task.async(fn -> Servy.Tracker.get_location("bigfoot") end)
+    task = Task.async(Servy.Tracker, :get_location, ["bigfoot"])
+    snapshots = 
+      ["cam-1", "cam-2", "cam-3"]
+      # NOTE: The commented out line is equivalent to the line below it. This method is called MFA:
+      # Module, Function, Arguments
+      #|> Enum.map(&Task.async(fn -> VideoCam.get_snapshot(&1) end))
+      |> Enum.map(&Task.async(VideoCam, :get_snapshot, [&1]))
+      |> Enum.map(&Task.await/1)
 
-    spawn(fn -> send(parent, {:result, Servy.VideoCam.get_snapshot("cam-1")}) end)
-    spawn(fn -> send(parent, {:result, Servy.VideoCam.get_snapshot("cam-2")}) end)
-    spawn(fn -> send(parent, {:result, Servy.VideoCam.get_snapshot("cam-3")}) end)
+    where_is_bigfoot = Task.await(task)
 
-    snapshot1 = receive do {:result, filename} -> filename end
-    snapshot2 = receive do {:result, filename} -> filename end
-    snapshot3 = receive do {:result, filename} -> filename end
-
-    snapshots = [snapshot1, snapshot2, snapshot3]
-
-    %{ conv | status: 200, resp_body: inspect snapshots}
+    #%{ conv | status: 200, resp_body: inspect {snapshots, where_is_bigfoot}}
+    render(conv, "sensors.eex", snapshots: snapshots, location: where_is_bigfoot)
   end
-  def route(%Conv{method: "GET", path: "/kaboom"} = conv ) do
+  def route(%Conv{method: "GET", path: "/kaboom"} = _conv ) do
     raise "Kaboom!"
   end
   def route(%Conv{method: "GET", path: "/hibernate/" <> time} = conv ) do
@@ -67,7 +72,7 @@ defmodule Servy.Handler do
     params = Map.put(conv.params, "id", id)
     BearController.show(conv, params)
   end
-  def route(%{method: "DELETE", path: "/bears/" <> id} = conv) do
+  def route(%{method: "DELETE", path: "/bears/" <> _id} = conv) do
     BearController.delete(conv, conv.params)
   end
   # name=Baloo&type=Brown

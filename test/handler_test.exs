@@ -58,6 +58,39 @@ defmodule HandlerTest do
     assert remove_whitespace(response) == remove_whitespace(expected_response)
   end
 
+  test "GET /sensors" do
+    request = """
+    GET /sensors HTTP/1.1\r
+    Host: example.com\r
+    User-Agent: ExampleBrowser/1.0\r
+    Accept: */*\r
+    \r
+    """
+
+    response = handle(request)
+
+    expected_response = """
+    HTTP/1.1 200 OK\r
+    Content-Type: text/html\r
+    Content-Length: 305\r
+    \r
+    
+    <h1>Sensors</h1>
+    
+    <h2>Snapshots</h2>
+      <ul>
+        <li><imgsrc=\"cam-1-snapshot.jpg\"alt=\"snapshot\"></li>
+        <li><imgsrc=\"cam-2-snapshot.jpg\"alt=\"snapshot\"></li>
+        <li><imgsrc=\"cam-3-snapshot.jpg\"alt=\"snapshot\"></li>
+      </ul>
+      
+      <h2>Where is Bigfoot?</h2>
+      %{lat:\"29.0469N\",lng:\"98.8667W\"}
+    """
+
+    assert remove_whitespace(response) == remove_whitespace(expected_response)
+  end
+
   test "GET /bigfoot" do
     request = """
     GET /bigfoot HTTP/1.1\r
