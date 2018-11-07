@@ -27,6 +27,12 @@ defmodule Servy.Handler do
     |> format_response
   end
 
+  def route(%Conv{method: "POST", path: "/pledges"} = conv ) do
+    Servy.PledgeController.create(conv, conv.params)
+  end
+  def route(%Conv{method: "GET", path: "/pledges"} = conv ) do
+    Servy.PledgeController.index(conv)
+  end
   def route(%Conv{ method: "GET", path: "/sensors" } = conv) do
     # NOTE: The commented out line is equivalent to the line below it. This method is called MFA:
     # Module, Function, Arguments
