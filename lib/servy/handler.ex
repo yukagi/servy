@@ -33,6 +33,9 @@ defmodule Servy.Handler do
   def route(%Conv{method: "GET", path: "/pledges"} = conv ) do
     Servy.PledgeController.index(conv)
   end
+  def route(%Conv{method: "GET", path: "/pledges/new"} = conv ) do
+    Servy.PledgeController.new(conv)
+  end
   def route(%Conv{ method: "GET", path: "/sensors" } = conv) do
     # NOTE: The commented out line is equivalent to the line below it. This method is called MFA:
     # Module, Function, Arguments
