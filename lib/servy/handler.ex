@@ -94,6 +94,9 @@ defmodule Servy.Handler do
     |> File.read
     |> handle_file(conv)
   end
+  def route(%Conv{ method: "GET", path: "/404s"} = conv) do
+    %{conv | status: 200, resp_body: "404 Counts: #{inspect Servy.FourOhFourCounter.get_counts}"}
+  end
   def route(%Conv{ path: path} = conv) do
     %{conv | status: 404, resp_body: "No #{path} here!"}
   end
