@@ -43,12 +43,10 @@ defmodule Servy.PledgeServer do
   # Client Interface Functions
   # ======================================================
   def start do
-    IO.puts "\nStarting the PledgeServer..."
     GenericServer.start(__MODULE__, [], @name)
   end
 
   def create_pledge(name, amount) do
-    IO.puts "Creating Pledge for #{name}"
     GenericServer.call @name, {:create_pledge, name, amount}
   end
 
@@ -56,17 +54,14 @@ defmodule Servy.PledgeServer do
   # Therefore, when waiting to receive the return value from sending the message, this
   # function will block.
   def recent_pledges() do
-    IO.puts "Recent Pledges called:"
     GenericServer.call @name, :recent_pledges
   end
 
   def total_pledged() do
-    IO.puts "Total Pledged called:"
     GenericServer.call @name, :total_pledged
   end
 
   def clear do
-    IO.puts "Clearing the cache~!"
     GenericServer.cast @name, :clear
   end
 
