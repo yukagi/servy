@@ -40,7 +40,6 @@ defmodule Servy.PledgeServer do
   # ======================================================
   # Server Callbacks
   # ======================================================
-  # Default implementation of init... supposed to inject, but it's throwing errors....
   def init(state) do
     pledges = fetch_recent_pledges_from_service()
     new_state = %{state | pledges: pledges}
