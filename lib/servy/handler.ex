@@ -11,7 +11,6 @@ defmodule Servy.Handler do
 
   alias Servy.Conv
   alias Servy.BearController
-  alias Servy.VideoCam
 
   @doc """
   Transforms the request into a response
@@ -40,19 +39,11 @@ defmodule Servy.Handler do
     # NOTE: The commented out line is equivalent to the line below it. This method is called MFA:
     # Module, Function, Arguments
     #task = Task.async(fn -> Servy.Tracker.get_location("bigfoot") end)
-    task = Task.async(Servy.Tracker, :get_location, ["bigfoot"])
-    snapshots = 
-      ["cam-1", "cam-2", "cam-3"]
-      # NOTE: The commented out line is equivalent to the line below it. This method is called MFA:
-      # Module, Function, Arguments
-      #|> Enum.map(&Task.async(fn -> VideoCam.get_snapshot(&1) end))
-      |> Enum.map(&Task.async(VideoCam, :get_snapshot, [&1]))
-      |> Enum.map(&Task.await/1)
+    #task = Task.async(Servy.Tracker, :get_location, ["bigfoot"])
+    sensor_data = Servy.SensorServer.get_sensor_data
 
-    where_is_bigfoot = Task.await(task)
-
-    #%{ conv | status: 200, resp_body: inspect {snapshots, where_is_bigfoot}}
-    render(conv, "sensors.eex", snapshots: snapshots, location: where_is_bigfoot)
+    #render(conv, "sensors.eex", sensor_data)
+    render(conv, "sensors.eex", location: sensor_data.location, snapshots: sensor_data.snapshots)
   end
   def route(%Conv{method: "GET", path: "/kaboom"} = _conv ) do
     raise "Kaboom!"

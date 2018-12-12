@@ -1,5 +1,6 @@
 defmodule HandlerTest do
   use ExUnit.Case
+  alias Servy.SensorServer
 
   import Servy.Handler, only: [handle: 1]
 
@@ -59,6 +60,8 @@ defmodule HandlerTest do
   end
 
   test "GET /sensors" do
+    SensorServer.start
+
     request = """
     GET /sensors HTTP/1.1\r
     Host: example.com\r
