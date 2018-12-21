@@ -1,4 +1,3 @@
-# NOTE: Pull this out into it's own file at the end of the video
 defmodule Servy.SensorServer do
   @name :sensor_server
   @refresh_interval :timer.seconds(5)
