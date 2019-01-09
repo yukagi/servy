@@ -1,17 +1,32 @@
 defmodule Servy.PledgeServer do
+  # Just an example of how you can override some options.
+  #use GenServer, restart: :temporary
   use GenServer
 
+  # TODO: Look into the reason for doing this internal module.
+  # Is it common practice? Or is it just a stopgap/example?
   defmodule State do
     defstruct cache_size: 3, pledges: []
   end
+
+  # You can customize the child spec as necessary by overriding the function.
+  # This is unnecessary right now, but a good example.
+  #def child_spec(arg) do
+    #%{
+      #id: Servy.PledgeServer,
+      #restart: :temporary,
+      #start: {Servy.PledgeServer, :start_link, [[]]}
+    #}
+  #end
 
 
   @name :pledge_server
   # ======================================================
   # Client Interface Functions
   # ======================================================
-  def start do
-    GenServer.start(__MODULE__, %State{}, name: @name)
+  def start_link(_arg) do
+    IO.puts "Starting the pledge server"
+    GenServer.start_link(__MODULE__, %State{}, name: @name)
   end
 
   def create_pledge(name, amount) do
