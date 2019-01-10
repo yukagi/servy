@@ -1,18 +1,9 @@
 defmodule Servy do
-  @moduledoc """
-  Documentation for Servy.
-  """
+  use Application
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Servy.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def start(_type, _args) do
+    IO.puts "Starting the Servy Application..."
+    Servy.Supervisor.start_link()
   end
+
 end
